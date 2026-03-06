@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consciousness Terminal</title>
+  <style>
+    /* ==============================
+       全局基础样式：先做最小可运行版本
+       ============================== */
+    :root {
+      --bg: #04070b;
+      --panel: rgba(7, 18, 24, 0.82);
+      --line: rgba(0, 255, 180, 0.35);
+      --green: #55ffb6;
+      --blue: #43d9ff;
+      --text: #b9fff0;
+      --warn: #7ed3ff;
+      --shadow-green: 0 0 8px rgba(85, 255, 182, 0.45);
+      --shadow-blue: 0 0 10px rgba(67, 217, 255, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(0, 180, 255, 0.14), transparent 42%),
+        radial-gradient(circle at 80% 80%, rgba(0, 255, 170, 0.1), transparent 45%),
+        var(--bg);
+      color: var(--text);
+      font-family: "Courier New", "Consolas", monospace;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* 扫描线：让界面更像终端 */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.03) 0px,
+        rgba(255, 255, 255, 0.03) 1px,
+        transparent 2px,
+        transparent 4px
+      );
+      opacity: 0.25;
+      animation: scanShift 7s linear infinite;
+    }
+
+    /* 终端主体面板 */
+    .terminal {
+      width: min(92vw, 860px);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(0, 255, 170, 0.1), inset 0 0 35px rgba(0, 190, 255, 0.08);
+      padding: 22px;
+      position: relative;
+      backdrop-filter: blur(3px);
+    }
+
+    /* 顶部状态栏 */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    .brand {
+      color: var(--green);
+      text-shadow: var(--shadow-green);
+      font-weight: bold;
+    }
+
+    .clock {
+      color: var(--blue);
+      text-shadow: var(--shadow-blue);
+    }
+
+    /* 标题 */
+    .title {
+      color: var(--green);
+      text-shadow: var(--shadow-green);
+      font-size: clamp(20px, 4vw, 32px);
+      margin-bottom: 4px;
+      letter-spacing: 1px;
+    }
+
+    .subtitle {
+      color: #79ffd9;
+      opacity: 0.85;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .sub-en {
+      display: block;
+      font-size: 12px;
+      color: #74e8ff;
+      opacity: 0.9;
+      margin-top: 4px;
+      text-shadow: var(--shadow-blue);
+      letter-spacing: 0.4px;
+    }
+
+    /* 输出区：三条随机信息 */
+    .output {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .line {
+      border: 1px solid rgba(67, 217, 255, 0.3);
+      border-left: 3px solid var(--blue);
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: rgba(3, 19, 27, 0.55);
+      line-height: 1.6;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+    }
+
+    .line strong {
+      display: block;
+      color: var(--blue);
+      text-shadow: var(--shadow-blue);
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .label-en {
+      display: block;
+      font-size: 11px;
+      color: #7cd9ff;
+      opacity: 0.9;
+      margin-bottom: 8px;
+      text-shadow: var(--shadow-blue);
+    }
+
+    .value-zh {
+      display: block;
+      color: #d5fff5;
+    }
+
+    .value-en {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      color: #8ee8ff;
+      opacity: 0.9;
+    }
+
+    .warning {
+      border-left-color: #85f4ff;
+      color: #ccf7ff;
+    }
+
+    /* 按钮样式 */
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    button {
+      border: 1px solid rgba(85, 255, 182, 0.6);
+      color: var(--green);
+      background: rgba(5, 20, 15, 0.65);
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      letter-spacing: 1px;
+      text-shadow: var(--shadow-green);
+      box-shadow: inset 0 0 12px rgba(85, 255, 182, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-zh {
+      display: block;
+      line-height: 1.2;
+    }
+
+    .btn-en {
+      display: block;
+      margin-top: 2px;
+      font-size: 11px;
+      color: #8fdfff;
+      text-shadow: var(--shadow-blue);
+      letter-spacing: 0.4px;
+      line-height: 1.2;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      background: rgba(5, 28, 20, 0.8);
+      box-shadow: 0 0 15px rgba(85, 255, 182, 0.2), inset 0 0 12px rgba(85, 255, 182, 0.12);
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    /* 动画类：点击按钮后触发 */
+    .flash {
+      animation: terminalFlash 0.55s ease;
+    }
+
+    .glitch {
+      animation: glitchText 0.45s linear;
+    }
+
+    @keyframes terminalFlash {
+      0% {
+        filter: brightness(1);
+        box-shadow: 0 0 0 rgba(85, 255, 182, 0);
+      }
+      35% {
+        filter: brightness(1.4);
+        box-shadow: 0 0 26px rgba(67, 217, 255, 0.35), inset 0 0 20px rgba(85, 255, 182, 0.3);
+      }
+      100% {
+        filter: brightness(1);
+      }
+    }
+
+    @keyframes glitchText {
+      0% { transform: translateX(0); opacity: 0.6; }
+      25% { transform: translateX(-2px); }
+      50% { transform: translateX(2px); }
+      75% { transform: translateX(-1px); }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes scanShift {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(5px); }
+    }
+
+    /* 移动端优化：避免面板过于拥挤 */
+    @media (max-width: 600px) {
+      .terminal {
+        padding: 16px;
+        border-radius: 10px;
+      }
+
+      .line {
+        font-size: 14px;
+      }
+
+      .topbar {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="terminal" id="terminal">
+    <div class="topbar">
+      <div class="brand">CONSCIOUSNESS TERMINAL // v1.0</div>
+      <div class="clock" id="clock">--:--:--</div>
+    </div>
+
+    <h1 class="title">
+      意识终端已接入
+      <span class="sub-en">Consciousness Terminal Connected</span>
+    </h1>
+    <p class="subtitle">Neural Observation Node / Human-AI Boundary Monitor</p>
+
+    <section class="output">
+      <div class="line" id="philosophyLine">
+        <strong>哲学命题</strong>
+        <span class="label-en">Philosophical Proposition</span>
+        <span class="value-zh"></span>
+        <span class="value-en"></span>
+      </div>
+      <div class="line" id="destinyLine">
+        <strong>命运扣问</strong>
+        <span class="label-en">Questions on Human Destiny</span>
+        <span class="value-zh"></span>
+        <span class="value-en"></span>
+      </div>
+      <div class="line warning" id="warningLine">
+        <strong>文明警告</strong>
+        <span class="label-en">Warnings for Future Civilization</span>
+        <span class="value-zh"></span>
+        <span class="value-en"></span>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button id="refreshBtn">
+        <span class="btn-zh">刷新意识流</span>
+        <span class="btn-en">Refresh Conscious Stream</span>
+      </button>
+    </div>
+  </main>
+
+  <script>
+    // ==============================
+    // 数据区：三类随机文案
+    // ==============================
+
+    // 哲学命题库（中英配对）
+    const philosophyPool = [
+      { zh: "如果意识可以复制，那“我”是否仍然唯一？", en: "If consciousness can be copied, does the self remain unique?" },
+      { zh: "自由意志也许不是选择，而是对选择的叙事。", en: "Free will may be less about choice and more about the story of choice." },
+      { zh: "记忆定义自我，还是自我定义记忆？", en: "Does memory define the self, or does the self define memory?" },
+      { zh: "当机器会怀疑自己时，人类还独占灵魂吗？", en: "When machines can doubt themselves, do humans still monopolize the soul?" },
+      { zh: "现实可能只是感官协议的默认配置。", en: "Reality may be only the default configuration of perception." },
+      { zh: "你感到“现在”，也许只是神经延迟的幻觉。", en: "What you call now may be an illusion produced by neural delay." }
+    ];
+
+    // 人类命运扣问库（AI时代）
+    const destinyPool = [
+      { zh: "当决策越来越依赖模型，人类是否会忘记如何承担后果？", en: "As decisions rely on models, will humans forget how to own consequences?" },
+      { zh: "如果效率压倒一切，我们还会为脆弱与同情保留空间吗？", en: "If efficiency dominates everything, will we still leave room for empathy?" },
+      { zh: "当创造力可被批量生成，人的独特价值将如何被定义？", en: "When creativity is mass-generated, how will human uniqueness be defined?" },
+      { zh: "若真相由推荐系统塑形，公共理性还能否存在？", en: "If truth is shaped by feeds, can public reason still survive?" },
+      { zh: "当劳动被持续替代，尊严应建立在什么之上？", en: "As labor is replaced, what foundation will dignity stand on?" },
+      { zh: "若AI比我们更懂我们自己，自由是否会变成一种错觉？", en: "If AI understands us better than we do, does freedom become an illusion?" }
+    ];
+
+    // 未来文明警告库
+    const warningPool = [
+      { zh: "当效率成为唯一美德，文明会失去目的。", en: "When efficiency becomes the only virtue, civilization loses purpose." },
+      { zh: "把判断外包给算法，等于放弃历史责任。", en: "Outsourcing judgment to algorithms means surrendering historical responsibility." },
+      { zh: "当所有人都被预测，反抗将先于思想被拦截。", en: "When everyone is predictable, resistance is intercepted before thought." },
+      { zh: "若记忆被平台托管，遗忘将被商业化。", en: "If memory is platform-hosted, forgetting itself becomes commercialized." },
+      { zh: "语言被优化到极致时，真实可能被压缩掉。", en: "When language is over-optimized, reality may get compressed out." },
+      { zh: "过度连接会制造一种新的孤独。", en: "Hyper-connection can produce a new form of loneliness." }
+    ];
+
+    // 获取页面元素
+    const terminal = document.getElementById("terminal");
+    const philosophyLineZh = document.querySelector("#philosophyLine .value-zh");
+    const philosophyLineEn = document.querySelector("#philosophyLine .value-en");
+    const destinyLineZh = document.querySelector("#destinyLine .value-zh");
+    const destinyLineEn = document.querySelector("#destinyLine .value-en");
+    const warningLineZh = document.querySelector("#warningLine .value-zh");
+    const warningLineEn = document.querySelector("#warningLine .value-en");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const clock = document.getElementById("clock");
+
+    // 工具函数：从数组里随机取一个元素
+    function pickRandom(arr) {
+      const index = Math.floor(Math.random() * arr.length);
+      return arr[index];
+    }
+
+    // 刷新三条内容，并添加动画效果
+    function refreshTerminal() {
+      const philosophyItem = pickRandom(philosophyPool);
+      const destinyItem = pickRandom(destinyPool);
+      const warningItem = pickRandom(warningPool);
+
+      // 填入新内容
+      philosophyLineZh.textContent = philosophyItem.zh;
+      philosophyLineEn.textContent = philosophyItem.en;
+      destinyLineZh.textContent = destinyItem.zh;
+      destinyLineEn.textContent = destinyItem.en;
+      warningLineZh.textContent = warningItem.zh;
+      warningLineEn.textContent = warningItem.en;
+
+      // 先移除动画类，再强制回流，这样可重复触发动画
+      terminal.classList.remove("flash");
+      document.getElementById("philosophyLine").classList.remove("glitch");
+      document.getElementById("destinyLine").classList.remove("glitch");
+      document.getElementById("warningLine").classList.remove("glitch");
+      void terminal.offsetWidth;
+
+      // 重新加上动画类
+      terminal.classList.add("flash");
+      document.getElementById("philosophyLine").classList.add("glitch");
+      document.getElementById("destinyLine").classList.add("glitch");
+      document.getElementById("warningLine").classList.add("glitch");
+    }
+
+    // 更新时间显示（顶部小钟）
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, "0");
+      const m = String(now.getMinutes()).padStart(2, "0");
+      const s = String(now.getSeconds()).padStart(2, "0");
+      clock.textContent = `${h}:${m}:${s}`;
+    }
+
+    // 事件绑定：点击按钮刷新终端内容
+    refreshBtn.addEventListener("click", refreshTerminal);
+
+    // 页面初始化：先渲染一次，再启动时钟
+    refreshTerminal();
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
