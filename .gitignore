@@ -1,2 +1,6 @@
 video/out/*.png
 video/out/*-preview.mp4
+ink-and-light/node_modules/
+ink-and-light/out/*.png
+ink-and-light/out/*.log
+ink-and-light/out/*-preview.mp4
