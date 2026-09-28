@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>心智之问 → 智能革命</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@600;900&display=block" rel="stylesheet" />
+<style>
+  /* ==============================
+     画布：固定 1920×1080，所有动画都由 setTime(t) 驱动
+     ============================== */
+  :root {
+    --bg: #04070b;
+    --green: #55ffb6;
+    --blue: #43d9ff;
+    --amber: #ffb454;
+    --white: #e6fff8;
+    --text: #b9fff0;
+    --mono: "JetBrains Mono", "WenQuanYi Zen Hei Mono", monospace;
+    --sans: "Noto Sans SC", "WenQuanYi Zen Hei", sans-serif;
+    --serif: "Noto Serif SC", "Noto Sans SC", "WenQuanYi Zen Hei", serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+  }
+
+  #bg, #fx { position: absolute; inset: 0; }
+
+  /* 扫描线 + 暗角：和 index.html 的终端风格保持一致 */
+  #scan {
+    position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(to bottom,
+      rgba(255,255,255,0.028) 0px, rgba(255,255,255,0.028) 1px,
+      transparent 2px, transparent 4px);
+  }
+  #vignette {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.75) 100%);
+  }
+
+  .layer { position: absolute; inset: 0; opacity: 0; }
+
+  /* ---------- 开场终端 ---------- */
+  #boot {
+    padding: 150px 220px;
+    font-family: var(--mono);
+    font-size: 30px;
+    line-height: 1.9;
+    color: var(--green);
+    text-shadow: 0 0 10px rgba(85,255,182,0.55);
+    white-space: pre;
+  }
+  #boot .q { color: var(--white); font-size: 40px; }
+  .caret { display: inline-block; width: 0.6em; height: 1em; background: currentColor; vertical-align: -0.12em; }
+
+  #title {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+  }
+  #title .main {
+    font-family: var(--serif); font-weight: 900; font-size: 132px; letter-spacing: 0.06em;
+    color: var(--white);
+    text-shadow: 0 0 24px rgba(85,255,182,0.55), 0 0 60px rgba(67,217,255,0.35);
+  }
+  #title .main .arrow { color: var(--blue); padding: 0 0.25em; }
+  #title .sub {
+    margin-top: 36px; font-size: 38px; letter-spacing: 0.3em; color: var(--text);
+  }
+  #title .meta {
+    margin-top: 28px; font-family: var(--mono); font-size: 24px; color: var(--blue); letter-spacing: 0.4em;
+  }
+
+  /* ---------- 幕标题 ---------- */
+  #act {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding-bottom: 180px;
+  }
+  #act .num { font-family: var(--mono); font-size: 30px; letter-spacing: 0.8em; color: var(--blue); }
+  #act .name {
+    margin-top: 24px; font-family: var(--serif); font-weight: 900; font-size: 104px; color: var(--white);
+    text-shadow: 0 0 30px rgba(67,217,255,0.45);
+  }
+  #act .range { margin-top: 26px; font-family: var(--mono); font-size: 30px; color: var(--green); letter-spacing: 0.3em; }
+  #act .line { margin-top: 30px; height: 2px; background: linear-gradient(90deg, transparent, var(--blue), transparent); }
+
+  /* ---------- 事件卡片 ---------- */
+  #card {
+    padding: 120px 150px 0;
+    background: radial-gradient(ellipse 1300px 560px at 900px 320px, rgba(4,7,11,0.88) 30%, rgba(4,7,11,0) 100%);
+  }
+  #card .wrap { display: grid; grid-template-columns: 560px 1fr; gap: 70px; align-items: start; }
+  #card .year {
+    font-family: var(--mono); font-weight: 700; font-size: 190px; line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  #card .who { margin-top: 26px; font-size: 36px; color: var(--white); font-weight: 700; }
+  #card .tag {
+    display: inline-block; font-family: var(--mono); font-size: 24px; letter-spacing: 0.2em;
+    padding: 8px 18px; border: 2px solid currentColor; margin-bottom: 26px;
+  }
+  #card .ttl {
+    font-family: var(--serif); font-weight: 900; font-size: 72px; line-height: 1.25; color: var(--white);
+    min-height: 90px;
+  }
+  #card .desc { text-wrap: balance; margin-top: 28px; font-size: 36px; line-height: 1.65; color: var(--text); min-height: 120px; }
+  #card .quote {
+    margin-top: 34px; padding-left: 26px; border-left: 4px solid currentColor;
+    font-family: var(--serif); font-size: 38px; line-height: 1.5; font-style: normal;
+  }
+  #card .link {
+    margin-top: 30px; font-family: var(--mono); font-size: 24px; letter-spacing: 0.08em;
+  }
+
+  /* ---------- 寒冬 / 状态角标 ---------- */
+  #status {
+    position: absolute; top: 44px; right: 60px;
+    font-family: var(--mono); font-size: 22px; letter-spacing: 0.2em; color: var(--blue);
+    text-align: right; opacity: 0;
+  }
+  #status .winter { color: #9fc8ff; font-size: 26px; margin-top: 8px; }
+  #brand {
+    position: absolute; top: 44px; left: 60px; opacity: 0;
+    font-family: var(--mono); font-size: 22px; letter-spacing: 0.25em; color: rgba(85,255,182,0.75);
+  }
+
+  /* ---------- 终章 ---------- */
+  #finale {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  }
+  #finale .big {
+    font-family: var(--serif); font-weight: 900; font-size: 120px; color: var(--white);
+    text-shadow: 0 0 30px rgba(255,255,255,0.35), 0 0 80px rgba(67,217,255,0.5);
+  }
+  #finale .small { margin-top: 36px; font-size: 40px; letter-spacing: 0.25em; color: var(--text); }
+  #finale .end {
+    margin-top: 60px; font-family: var(--mono); font-size: 26px; letter-spacing: 0.5em; color: var(--blue);
+  }
+</style>
+</head>
+<body>
+  <canvas id="bg" width="1920" height="1080"></canvas>
+
+  <div id="boot" class="layer"></div>
+
+  <div id="title" class="layer">
+    <div class="main">心智之问<span class="arrow">→</span>智能革命</div>
+    <div class="sub">认知科学的争论，如何点燃人工智能</div>
+    <div class="meta">1943 — 2022</div>
+  </div>
+
+  <div id="act" class="layer">
+    <div class="num"></div>
+    <div class="name"></div>
+    <div class="range"></div>
+    <div class="line"></div>
+  </div>
+
+  <div id="card" class="layer">
+    <div class="wrap">
+      <div>
+        <div class="year"></div>
+        <div class="who"></div>
+      </div>
+      <div>
+        <div class="tag"></div>
+        <div class="ttl"></div>
+        <div class="desc"></div>
+        <div class="quote"></div>
+        <div class="link"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="finale" class="layer">
+    <div class="big"></div>
+    <div class="small"></div>
+    <div class="end"></div>
+  </div>
+
+  <canvas id="fx" width="1920" height="1080"></canvas>
+
+  <div id="brand">CONSCIOUSNESS TERMINAL // MIND → MACHINE</div>
+  <div id="status"><div class="yr"></div><div class="winter"></div></div>
+
+  <div id="scan"></div>
+  <div id="vignette"></div>
+
+<script>
+/* =====================================================
+   数据：从认知科学的争论到人工智能革命
+   track: cog 认知科学 / ai 人工智能 / debate 论战 / both 交汇
+   ===================================================== */
+const EVENTS = [
+  { act: 0, year: 1943, track: "both", who: "麦卡洛克 & 皮茨",
+    ttl: "神经元 = 逻辑门",
+    desc: "一位神经生理学家与一位逻辑学家证明：简化的神经元网络可以计算任何逻辑命题。",
+    quote: "大脑，第一次被写成了数学。" },
+  { act: 0, year: 1949, track: "cog", who: "唐纳德·赫布",
+    ttl: "学习 = 连接变强",
+    desc: "《行为的组织》提出：反复共同激活的神经元，其突触会被加强。",
+    quote: "“一起激发的神经元，连在一起。”" },
+  { act: 0, year: 1950, track: "ai", who: "艾伦·图灵",
+    ttl: "机器能思考吗？",
+    desc: "《计算机器与智能》用“模仿游戏”取代无法回答的哲学定义。",
+    quote: "把“思考”变成一个可以检验的问题。" },
+  { act: 0, year: 1956, track: "both", who: "达特茅斯 & MIT",
+    ttl: "同一年，两场革命",
+    desc: "达特茅斯会议命名“人工智能”；MIT 信息论研讨会上，米勒、乔姆斯基、纽厄尔与西蒙同台——认知科学诞生。",
+    quote: "心智与机器，开始使用同一种语言：信息处理。" },
+
+  { act: 1, year: 1958, track: "ai", who: "弗兰克·罗森布拉特",
+    ttl: "感知机",
+    desc: "一台能从样本中自己调整权重的机器，直接取材于赫布的学习思想。",
+    quote: "第一台“会学习”的机器。", link: "← 受 1949 赫布规则启发" },
+  { act: 1, year: 1959, track: "debate", who: "乔姆斯基 vs 斯金纳",
+    ttl: "心智不是黑箱",
+    desc: "乔姆斯基书评痛批行为主义：儿童习得语言的速度，无法用“刺激—反应”解释。",
+    quote: "心智内部有结构——认知主义取代行为主义。" },
+  { act: 1, year: 1962, track: "cog", who: "休伯尔 & 威塞尔",
+    ttl: "视觉皮层的层级",
+    desc: "猫的视觉皮层中，简单细胞识别边缘，复杂细胞整合简单细胞——视觉是逐层抽象的。",
+    quote: "这个层级结构，将在 27 年后变成卷积网络。" },
+  { act: 1, year: 1969, track: "debate", who: "明斯基 & 佩珀特",
+    ttl: "《感知机》",
+    desc: "严格证明单层感知机连“异或”都无法表示。资金转向符号主义。",
+    quote: "神经网络进入漫长寒冬。", winter: true },
+  { act: 1, year: 1976, track: "cog", who: "纽厄尔 & 西蒙",
+    ttl: "物理符号系统假说",
+    desc: "符号系统拥有产生一般智能的充分必要手段——符号主义 AI 的宣言。",
+    quote: "思维 = 符号的操作。" },
+  { act: 1, year: 1980, track: "debate", who: "约翰·塞尔",
+    ttl: "中文屋",
+    desc: "屋里的人按规则手册处理中文符号，对答如流，却一个字也不懂。",
+    quote: "“语法本身，不足以产生语义。”" },
+  { act: 1, year: 1986, track: "both", who: "鲁梅尔哈特 · 辛顿 · 威廉姆斯",
+    ttl: "反向传播 & 联结主义",
+    desc: "认知心理学家主导的《并行分布式处理》：知识不在符号里，而在千万连接的权重中。",
+    quote: "多层网络终于学会了“异或”。", link: "← 回应 1969 年的质疑" },
+  { act: 1, year: 1988, track: "debate", who: "福多 & 派利夏恩",
+    ttl: "符号 vs 联结",
+    desc: "他们反击：神经网络无法解释思维的“系统性”与组合性。这场论战延续至今。",
+    quote: "理解，需要结构吗？" },
+
+  { act: 2, year: 1989, track: "ai", who: "杨立昆",
+    ttl: "卷积神经网络",
+    desc: "模仿视觉皮层的层级感受野，用反向传播训练，读懂手写邮编。",
+    quote: "神经科学的发现，第一次变成产品。", link: "← 源自 1962 休伯尔 & 威塞尔" },
+  { act: 2, year: 1997, track: "ai", who: "霍赫赖特 & 施密德胡伯",
+    ttl: "LSTM",
+    desc: "用可学习的“门”决定记住什么、遗忘什么，让网络拥有长程记忆。",
+    quote: "工作记忆，被写进了网络结构。" },
+  { act: 2, year: 2006, track: "ai", who: "杰弗里·辛顿",
+    ttl: "深度信念网络",
+    desc: "逐层预训练让“深”网络变得可训练，“深度学习”一词重回舞台。",
+    quote: "寒冬过后，联结主义者坚持了二十年。" },
+  { act: 2, year: 2012, track: "ai", who: "AlexNet",
+    ttl: "ImageNet 的地震",
+    desc: "卷积网络 + GPU，Top-5 错误率 15.3%，大幅领先第二名的 26.2%。",
+    quote: "深度学习，正式爆发。", boom: true },
+  { act: 2, year: 2016, track: "ai", who: "AlphaGo",
+    ttl: "4 : 1",
+    desc: "深度网络的“直觉”加上搜索，击败围棋世界冠军李世石。",
+    quote: "第 37 手——人类从未想过的一步。", boom: true },
+  { act: 2, year: 2017, track: "both", who: "Vaswani 等",
+    ttl: "Attention Is All You Need",
+    desc: "Transformer 完全抛弃循环结构，只用“注意力”。而注意力，正是 1958 年布罗德本特以来认知心理学的核心课题。",
+    quote: "一个心理学概念，成为 AI 的基石。", boom: true },
+  { act: 2, year: 2022, track: "ai", who: "大语言模型",
+    ttl: "革命，爆发",
+    desc: "ChatGPT 两个月用户破亿。机器第一次用人类语言，与所有人对话。",
+    quote: "从追问心智，到创造心智。", boom: true },
+];
+
+const ACTS = [
+  { num: "第一幕", name: "心智可以被计算吗？", range: "1943 — 1956" },
+  { num: "第二幕", name: "符号与神经的战争", range: "1958 — 1988" },
+  { num: "第三幕", name: "从大脑，到大模型", range: "1989 — 2022" },
+];
+
+/* 启发关系：认知/交汇事件 → 后来的 AI 事件 */
+const LINKS = [
+  [1943, 1958], [1949, 1958], [1962, 1989], [1969, 1986], [1986, 2006], [1980, 2022], [1956, 2017],
+];
+
+const COLORS = { cog: "#55ffb6", ai: "#43d9ff", debate: "#ffb454", both: "#e6fff8" };
+const TAGS = { cog: "认知科学", ai: "人工智能", debate: "论  战", both: "交  汇" };
+
+/* =====================================================
+   时间线编排
+   ===================================================== */
+const FPS = 30;
+const D = { intro: 7.5, act: 3.0, event: 4.6, finale: 11 };
+const SEG = [];
+(function build() {
+  let t = 0;
+  SEG.push({ type: "intro", start: t, dur: D.intro }); t += D.intro;
+  let lastAct = -1;
+  EVENTS.forEach((e, i) => {
+    if (e.act !== lastAct) {
+      SEG.push({ type: "act", act: e.act, start: t, dur: D.act }); t += D.act;
+      lastAct = e.act;
+    }
+    const dur = D.event + (e.desc.length > 44 ? 0.8 : 0);
+    SEG.push({ type: "event", i, start: t, dur }); t += dur;
+  });
+  SEG.push({ type: "finale", start: t, dur: D.finale }); t += D.finale;
+  window.DURATION = t;
+})();
+
+/* =====================================================
+   工具函数
+   ===================================================== */
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const ease = (x) => { x = clamp(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const easeOut = (x) => 1 - Math.pow(1 - clamp(x), 3);
+function rng(seed) { // mulberry32
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const hash = (n) => rng(n * 9973 + 17)();
+const GLYPHS = "01ΣΔΨΩ<>/\\#@%&*+=?神经元心智符号";
+function typed(str, k, t, glitch = true) {
+  // k: 0..1 打字进度；末尾带几个乱码字符
+  const n = Math.floor(str.length * clamp(k));
+  let s = str.slice(0, n);
+  if (glitch && k > 0 && k < 1) {
+    for (let j = 0; j < 2 && n + j < str.length; j++) {
+      s += GLYPHS[Math.floor(hash(Math.floor(t * 30) * 7 + j) * GLYPHS.length)];
+    }
+  }
+  return s;
+}
+function fadeInOut(lt, dur, fin = 0.4, fout = 0.4) {
+  return clamp(lt / fin) * clamp((dur - lt) / fout);
+}
+const $ = (s) => document.querySelector(s);
+
+/* 当前“历史年份”：在事件之间平滑推进，用于时间轴游标与背景状态 */
+function yearAt(t) {
+  const evSegs = SEG.filter((s) => s.type === "event");
+  if (t < evSegs[0].start) return 1940;
+  for (let k = 0; k < evSegs.length; k++) {
+    const s = evSegs[k];
+    const y = EVENTS[s.i].year;
+    const prevY = k ? EVENTS[evSegs[k - 1].i].year : 1940;
+    if (t < s.start + s.dur) return lerp(prevY, y, ease((t - s.start) / 0.9));
+  }
+  return 2022;
+}
+function visited(t) {
+  const set = new Set();
+  SEG.forEach((s) => { if (s.type === "event" && t >= s.start + 0.5) set.add(EVENTS[s.i].year); });
+  return set;
+}
+
+/* =====================================================
+   背景：生长中的神经网络
+   ===================================================== */
+const bg = $("#bg").getContext("2d");
+const fx = $("#fx").getContext("2d");
+const R = rng(20260928);
+const NODES = Array.from({ length: 260 }, (_, i) => ({
+  x: R() * 1920, y: R() * 860 + 20,
+  ax: 8 + R() * 22, ay: 8 + R() * 22, fx: 0.05 + R() * 0.12, fy: 0.05 + R() * 0.12, ph: R() * 6.28,
+  born: R() * 0.92, // 在整体进度中的出现时刻
+}));
+
+function winterAmount(y) { return clamp((y - 1968) / 3) * clamp((1987 - y) / 3); }
+function boomAmount(y) { return clamp((y - 2010) / 4); }
+
+function drawBackground(t, year) {
+  const prog = clamp((year - 1940) / 82);
+  const winter = winterAmount(year);
+  const boom = boomAmount(year);
+
+  bg.globalCompositeOperation = "source-over";
+  bg.fillStyle = "#04070b";
+  bg.fillRect(0, 0, 1920, 1080);
+  // 氛围光晕
+  const g1 = bg.createRadialGradient(380, 160, 0, 380, 160, 900);
+  g1.addColorStop(0, `rgba(0,180,255,${0.12 + boom * 0.1})`); g1.addColorStop(1, "rgba(0,0,0,0)");
+  bg.fillStyle = g1; bg.fillRect(0, 0, 1920, 1080);
+  const g2 = bg.createRadialGradient(1550, 800, 0, 1550, 800, 900);
+  g2.addColorStop(0, `rgba(0,255,170,${0.09 * (1 - winter) + boom * 0.08})`); g2.addColorStop(1, "rgba(0,0,0,0)");
+  bg.fillStyle = g2; bg.fillRect(0, 0, 1920, 1080);
+
+  // 节点
+  const visible = NODES.filter((n) => n.born <= 0.12 + prog * 0.95);
+  const pts = visible.map((n) => ({
+    x: n.x + Math.sin(t * n.fx + n.ph) * n.ax,
+    y: n.y + Math.cos(t * n.fy + n.ph) * n.ay,
+    a: clamp((0.12 + prog * 0.95 - n.born) * 12),
+    n,
+  }));
+
+  const dim = 1 - winter * 0.65;
+  const maxD = 150 + boom * 40;
+  bg.lineWidth = 1;
+  for (let i = 0; i < pts.length; i++) {
+    for (let j = i + 1; j < pts.length; j++) {
+      const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+      const d = Math.hypot(dx, dy);
+      if (d > maxD) continue;
+      const a = (1 - d / maxD) * 0.22 * pts[i].a * pts[j].a * dim;
+      bg.strokeStyle = winter > 0.3 ? `rgba(140,180,255,${a})` : `rgba(85,255,182,${a})`;
+      bg.beginPath(); bg.moveTo(pts[i].x, pts[i].y); bg.lineTo(pts[j].x, pts[j].y); bg.stroke();
+      // 沿连接传播的信号脉冲
+      const rate = 0.18 + boom * 0.9;
+      const seedv = hash(i * 131 + j);
+      if (seedv < 0.25 + boom * 0.35) {
+        const p = (t * rate + seedv * 10) % 1;
+        const px = lerp(pts[i].x, pts[j].x, p), py = lerp(pts[i].y, pts[j].y, p);
+        bg.fillStyle = boom > 0.2 ? `rgba(230,255,248,${0.8 * a * 4})` : `rgba(67,217,255,${0.7 * a * 4})`;
+        bg.beginPath(); bg.arc(px, py, 1.8 + boom, 0, 6.283); bg.fill();
+      }
+    }
+  }
+  for (const p of pts) {
+    const pulse = 0.5 + 0.5 * Math.sin(t * 2 + p.n.ph * 3);
+    bg.fillStyle = winter > 0.3
+      ? `rgba(160,190,255,${(0.35 + 0.3 * pulse) * p.a * dim})`
+      : `rgba(85,255,182,${(0.4 + 0.4 * pulse) * p.a})`;
+    bg.beginPath(); bg.arc(p.x, p.y, 2.2 + pulse * 1.2, 0, 6.283); bg.fill();
+  }
+
+  // 寒冬：冷色雾 + 飘雪
+  if (winter > 0.01) {
+    bg.fillStyle = `rgba(20,40,80,${0.35 * winter})`;
+    bg.fillRect(0, 0, 1920, 1080);
+    for (let k = 0; k < 140; k++) {
+      const r = rng(k + 999);
+      const x = (r() * 1920 + Math.sin(t * 0.7 + k) * 30) % 1920;
+      const y = (r() * 1080 + t * (30 + r() * 50)) % 1080;
+      bg.fillStyle = `rgba(210,230,255,${0.5 * winter * r()})`;
+      bg.beginPath(); bg.arc(x, y, 1 + r() * 2.2, 0, 6.283); bg.fill();
+    }
+  }
+}
+
+/* =====================================================
+   底部：双轨时间轴
+   ===================================================== */
+const TL = { x0: 160, x1: 1760, cog: 912, ai: 1000, debate: 956 };
+const X = (y) => lerp(TL.x0, TL.x1, (y - 1940) / (2025 - 1940));
+
+function drawTimeline(t, year, alpha) {
+  if (alpha <= 0) return;
+  const seen = visited(t);
+  fx.save();
+  fx.globalAlpha = alpha;
+
+  // 底部遮罩，让时间轴清晰
+  const gg = fx.createLinearGradient(0, 820, 0, 1080);
+  gg.addColorStop(0, "rgba(4,7,11,0)"); gg.addColorStop(0.35, "rgba(4,7,11,0.85)"); gg.addColorStop(1, "rgba(4,7,11,0.95)");
+  fx.fillStyle = gg; fx.fillRect(0, 820, 1920, 260);
+
+  fx.font = '20px "JetBrains Mono", monospace';
+  fx.textBaseline = "middle";
+  // 轨道
+  [["cog", "认知科学"], ["ai", "人工智能"]].forEach(([k, label]) => {
+    fx.strokeStyle = COLORS[k] + "55"; fx.lineWidth = 2;
+    fx.beginPath(); fx.moveTo(TL.x0, TL[k]); fx.lineTo(TL.x1, TL[k]); fx.stroke();
+    fx.strokeStyle = COLORS[k]; fx.lineWidth = 3; fx.shadowColor = COLORS[k]; fx.shadowBlur = 12;
+    fx.beginPath(); fx.moveTo(TL.x0, TL[k]); fx.lineTo(X(year), TL[k]); fx.stroke();
+    fx.shadowBlur = 0;
+    fx.fillStyle = COLORS[k];
+    fx.font = '700 22px "Noto Sans SC", sans-serif';
+    fx.textAlign = "right"; fx.fillText(label, TL.x0 - 22, TL[k]);
+  });
+
+  // 刻度
+  fx.font = '18px "JetBrains Mono", monospace';
+  fx.textAlign = "center";
+  for (let y = 1940; y <= 2020; y += 10) {
+    fx.fillStyle = "rgba(185,255,240,0.45)";
+    fx.fillText(String(y), X(y), 1045);
+    fx.fillRect(X(y) - 0.5, 1022, 1, 8);
+  }
+
+  // 寒冬区间
+  const w0 = X(1969), w1 = X(Math.min(year, 1986));
+  if (year > 1969) {
+    fx.fillStyle = "rgba(140,180,255,0.10)";
+    fx.fillRect(w0, TL.cog - 22, w1 - w0, TL.ai - TL.cog + 44);
+    fx.fillStyle = "rgba(160,200,255,0.7)";
+    fx.font = '16px "Noto Sans SC", sans-serif';
+    fx.textAlign = "left";
+    fx.fillText("神经网络寒冬", w0 + 6, TL.cog - 34);
+  }
+
+  // 启发连线
+  LINKS.forEach(([a, b]) => {
+    if (!seen.has(a) || !seen.has(b)) return;
+    const ea = EVENTS.find((e) => e.year === a), eb = EVENTS.find((e) => e.year === b);
+    const ya = laneY(ea.track, "src"), yb = laneY(eb.track, "dst");
+    const xa = X(a), xb = X(b);
+    const segB = SEG.find((s) => s.type === "event" && EVENTS[s.i].year === b);
+    const k = clamp((t - segB.start - 0.6) / 1.2);
+    fx.strokeStyle = `rgba(230,255,248,${0.55})`;
+    fx.lineWidth = 1.6;
+    fx.setLineDash([6, 6]);
+    fx.lineDashOffset = -t * 20;
+    fx.beginPath();
+    const cx = (xa + xb) / 2, cy = Math.min(ya, yb) - 40 - (xb - xa) * 0.12;
+    // 逐段画出贝塞尔曲线（按进度 k）
+    const N = 40;
+    for (let s = 0; s <= N * k; s++) {
+      const u = s / N;
+      const x = (1 - u) * (1 - u) * xa + 2 * (1 - u) * u * cx + u * u * xb;
+      const y = (1 - u) * (1 - u) * ya + 2 * (1 - u) * u * cy + u * u * yb;
+      s === 0 ? fx.moveTo(x, y) : fx.lineTo(x, y);
+    }
+    fx.stroke();
+    fx.setLineDash([]);
+  });
+
+  // 事件节点
+  EVENTS.forEach((e) => {
+    if (!seen.has(e.year)) return;
+    const lanes = e.track === "both" ? ["cog", "ai"] : [e.track === "debate" ? "debate" : e.track];
+    lanes.forEach((ln) => {
+      const x = X(e.year), y = TL[ln];
+      const c = COLORS[e.track];
+      fx.fillStyle = c; fx.shadowColor = c; fx.shadowBlur = 16;
+      fx.beginPath();
+      if (e.track === "debate") { // 论战用菱形
+        fx.moveTo(x, y - 9); fx.lineTo(x + 9, y); fx.lineTo(x, y + 9); fx.lineTo(x - 9, y); fx.closePath();
+      } else fx.arc(x, y, 7, 0, 6.283);
+      fx.fill(); fx.shadowBlur = 0;
+    });
+    if (e.track === "both") {
+      fx.strokeStyle = "rgba(230,255,248,0.5)"; fx.lineWidth = 1.5;
+      fx.beginPath(); fx.moveTo(X(e.year), TL.cog); fx.lineTo(X(e.year), TL.ai); fx.stroke();
+    }
+  });
+
+  // 游标
+  const cx = X(year);
+  fx.strokeStyle = "rgba(230,255,248,0.9)"; fx.lineWidth = 2;
+  fx.beginPath(); fx.moveTo(cx, TL.cog - 26); fx.lineTo(cx, TL.ai + 14); fx.stroke();
+  fx.fillStyle = "#e6fff8";
+  fx.font = '700 22px "JetBrains Mono", monospace';
+  fx.textAlign = "center";
+  fx.fillText(String(Math.round(year)), cx, TL.cog - 44);
+
+  fx.restore();
+}
+function laneY(track) {
+  if (track === "debate") return TL.debate;
+  if (track === "ai") return TL.ai;
+  return TL.cog;
+}
+
+/* =====================================================
+   终章粒子爆发
+   ===================================================== */
+const SPARKS = Array.from({ length: 900 }, (_, i) => {
+  const r = rng(i + 4242);
+  const ang = r() * 6.283, sp = 200 + Math.pow(r(), 0.6) * 1300;
+  return { ang, sp, size: 1 + r() * 2.8, hue: r(), delay: r() * 0.35 };
+});
+function drawBurst(lt, cx, cy, strength = 1) {
+  if (lt <= 0) return;
+  fx.save();
+  fx.globalCompositeOperation = "lighter";
+  // 冲击波
+  const ring = easeOut(lt / 1.6) * 1400;
+  fx.strokeStyle = `rgba(230,255,248,${0.6 * clamp(1 - lt / 1.6) * strength})`;
+  fx.lineWidth = 6;
+  fx.beginPath(); fx.arc(cx, cy, ring, 0, 6.283); fx.stroke();
+  // 闪光
+  const flash = clamp(1 - lt / 0.5) * strength;
+  if (flash > 0) {
+    const g = fx.createRadialGradient(cx, cy, 0, cx, cy, 900);
+    g.addColorStop(0, `rgba(255,255,255,${0.9 * flash})`);
+    g.addColorStop(1, "rgba(67,217,255,0)");
+    fx.fillStyle = g; fx.fillRect(0, 0, 1920, 1080);
+  }
+  for (const s of SPARKS) {
+    const k = lt - s.delay;
+    if (k <= 0) continue;
+    const d = s.sp * (1 - Math.exp(-k * 1.4)) / 1.4 * 1.2;
+    const x = cx + Math.cos(s.ang) * d, y = cy + Math.sin(s.ang) * d;
+    const a = clamp(1 - k / 5) * strength;
+    fx.fillStyle = s.hue < 0.5 ? `rgba(85,255,182,${a})` : s.hue < 0.85 ? `rgba(67,217,255,${a})` : `rgba(255,255,255,${a})`;
+    fx.beginPath(); fx.arc(x, y, s.size, 0, 6.283); fx.fill();
+  }
+  fx.restore();
+}
+
+/* =====================================================
+   主渲染：setTime(t)
+   ===================================================== */
+function show(id, a) { $(id).style.opacity = a; }
+
+window.setTime = function (t) {
+  const seg = SEG.find((s) => t >= s.start && t < s.start + s.dur) || SEG[SEG.length - 1];
+  const lt = t - seg.start;
+  const year = yearAt(t);
+
+  drawBackground(t, year);
+  fx.clearRect(0, 0, 1920, 1080);
+
+  ["#boot", "#title", "#act", "#card", "#finale"].forEach((id) => show(id, 0));
+
+  const firstEv = SEG.find((s) => s.type === "event");
+  const tlAlpha = clamp((t - (firstEv.start - D.act)) / 1.2) * (seg.type === "finale" ? clamp(1 - lt / 1.2) : 1);
+  drawTimeline(t, year, tlAlpha);
+
+  show("#brand", clamp((t - 1) / 1) * (seg.type === "finale" ? clamp(1 - lt / 1) : 1));
+  const st = $("#status");
+  st.style.opacity = tlAlpha;
+  st.querySelector(".yr").textContent = "YEAR " + Math.round(year);
+  const w = winterAmount(year);
+  st.querySelector(".winter").textContent = w > 0.2 ? "❄ AI WINTER" : boomAmount(year) > 0.2 ? "▲ DEEP LEARNING ERA" : "";
+  st.querySelector(".winter").style.color = w > 0.2 ? "#9fc8ff" : "#55ffb6";
+
+  if (seg.type === "intro") renderIntro(lt, t);
+  else if (seg.type === "act") renderAct(seg, lt, t);
+  else if (seg.type === "event") renderEvent(seg, lt, t);
+  else renderFinale(lt, t);
+};
+
+function renderIntro(lt, t) {
+  const lines = [
+    ["> 初始化 意识终端 ......", 0.2, 1.2],
+    ["> 载入 认知科学档案 1943 — 2022 ......", 1.3, 2.4],
+    ["> 载入 人工智能档案 ...... OK", 2.5, 3.2],
+    ["", 3.2, 3.2],
+    ["> 问题：心智，可以被计算吗？", 3.4, 4.4, "q"],
+  ];
+  if (lt < 4.9) {
+    show("#boot", clamp((4.9 - lt) / 0.3));
+    let html = "";
+    lines.forEach(([s, a, b, cls]) => {
+      if (lt < a) return;
+      const k = (lt - a) / Math.max(0.01, b - a);
+      const txt = typed(s, k, t);
+      html += cls ? `<span class="${cls}">${txt}</span>\n` : txt + "\n";
+    });
+    const blink = Math.floor(lt * 2.2) % 2 === 0 ? '<span class="caret"></span>' : "";
+    $("#boot").innerHTML = html.replace(/\n$/, "") + blink;
+  }
+  if (lt > 4.7) {
+    const a = fadeInOut(lt - 4.7, D.intro - 4.7, 0.6, 0.5);
+    show("#title", a);
+    const s = 1.06 - 0.06 * easeOut((lt - 4.7) / 1.5);
+    $("#title").style.transform = `scale(${s})`;
+    // 标题出现时的轻微故障位移
+    const gl = lt - 4.7 < 0.35 ? (hash(Math.floor(t * 30)) - 0.5) * 24 : 0;
+    $("#title .main").style.transform = `translateX(${gl}px)`;
+  }
+}
+
+function renderAct(seg, lt, t) {
+  const a = ACTS[seg.act];
+  show("#act", fadeInOut(lt, seg.dur, 0.5, 0.5));
+  $("#act .num").textContent = a.num;
+  $("#act .name").textContent = typed(a.name, (lt - 0.2) / 0.8, t);
+  $("#act .range").textContent = a.range;
+  $("#act .line").style.width = 900 * easeOut((lt - 0.3) / 1.2) + "px";
+}
+
+function renderEvent(seg, lt, t) {
+  const e = EVENTS[seg.i];
+  const c = COLORS[e.track];
+  const card = $("#card");
+  const a = fadeInOut(lt, seg.dur, 0.35, 0.4);
+  show("#card", a);
+  card.style.transform = `translateX(${(1 - easeOut(lt / 0.6)) * 60 - easeOut(1 - (seg.dur - lt) / 0.4) * 40}px)`;
+
+  // 年份：从上一个事件滚动计数到本年
+  const prevY = seg.i ? EVENTS[seg.i - 1].year : 1940;
+  const yk = easeOut(lt / 0.8);
+  let yStr = String(Math.round(lerp(prevY, e.year, yk)));
+  if (yk < 1 && hash(Math.floor(t * 30)) < 0.4) yStr = yStr.slice(0, 3) + GLYPHS[Math.floor(hash(t * 100) * 10)];
+  const yr = $("#card .year");
+  yr.textContent = yStr;
+  yr.style.color = c;
+  yr.style.textShadow = `0 0 30px ${c}88, 0 0 70px ${c}44`;
+
+  $("#card .who").textContent = typed(e.who, (lt - 0.35) / 0.5, t);
+  const tag = $("#card .tag");
+  tag.textContent = "[ " + TAGS[e.track] + " ]";
+  tag.style.color = c;
+  tag.style.opacity = clamp((lt - 0.2) / 0.3);
+
+  $("#card .ttl").textContent = typed(e.ttl, (lt - 0.35) / 0.6, t);
+  $("#card .desc").textContent = typed(e.desc, (lt - 0.9) / (e.desc.length * 0.028), t, false);
+  const qStart = 0.9 + e.desc.length * 0.028 + 0.15;
+  const q = $("#card .quote");
+  q.textContent = e.quote;
+  q.style.color = c;
+  q.style.opacity = clamp((lt - qStart) / 0.5);
+  q.style.transform = `translateY(${(1 - easeOut((lt - qStart) / 0.6)) * 16}px)`;
+  const lk = $("#card .link");
+  lk.textContent = e.link || "";
+  lk.style.color = "rgba(230,255,248,0.75)";
+  lk.style.opacity = clamp((lt - qStart - 0.3) / 0.5);
+
+  // 论战：琥珀色裂纹闪烁
+  if (e.track === "debate" && lt < 0.6) {
+    fx.fillStyle = `rgba(255,180,84,${0.12 * (1 - lt / 0.6)})`;
+    fx.fillRect(0, 0, 1920, 1080);
+  }
+  // 爆发年份：小型能量冲击
+  if (e.boom) drawBurst(lt, 330, 290, e.year === 2022 ? 0.9 : 0.35);
+}
+
+function renderFinale(lt, t) {
+  drawBurst(lt, 960, 470, 1);
+  const f = $("#finale");
+  show("#finale", clamp((lt - 1.4) / 0.8) * clamp((D.finale - lt) / 1.0));
+  const big = f.querySelector(".big"), small = f.querySelector(".small"), end = f.querySelector(".end");
+  if (lt < 5.6) {
+    big.textContent = typed("它，真的理解吗？", (lt - 1.5) / 1.0, t);
+    small.textContent = typed("中文屋的追问，四十年后依然回响", (lt - 2.8) / 1.2, t);
+    end.textContent = "";
+    f.style.opacity = clamp((lt - 1.4) / 0.8) * clamp((5.6 - lt) / 0.4);
+  } else {
+    big.textContent = typed("争论从未结束", (lt - 5.8) / 0.8, t);
+    small.textContent = typed("而革命，才刚刚开始", (lt - 6.8) / 0.9, t);
+    end.textContent = lt > 8.0 ? "CONSCIOUSNESS TERMINAL // END OF RECORD" : "";
+    end.style.opacity = clamp((lt - 8.0) / 0.6);
+    f.style.opacity = clamp((lt - 5.7) / 0.4) * clamp((D.finale - lt) / 1.0);
+  }
+}
+
+// 预览模式：直接在浏览器打开时按真实时间播放
+window.addEventListener("load", () => {
+  document.fonts.ready.then(() => {
+    window.READY = true;
+    if (!/render/.test(location.search)) {
+      const t0 = performance.now();
+      const loop = () => { setTime(((performance.now() - t0) / 1000) % DURATION); requestAnimationFrame(loop); };
+      loop();
+    } else setTime(0);
+  });
+});
+</script>
+</body>
+</html>
