@@ -23,6 +23,7 @@ import {TitleSplit} from './components/TitleSplit';
 import {Flash} from './components/Flash';
 import {NovelSentence} from './components/NovelSentence';
 import {ChineseRoom} from './components/ChineseRoom';
+import {ChapterLabel} from './components/ChapterLabel';
 
 const Night: React.FC<{children: React.ReactNode}> = ({children}) => <AbsoluteFill style={{background: palette.siliconNight}}>{children}</AbsoluteFill>;
 const Pos: React.FC<{style: React.CSSProperties; children: React.ReactNode}> = ({style, children}) => <div style={{position: 'absolute', ...style}}>{children}</div>;
@@ -44,10 +45,10 @@ const ColdOpen: React.FC<{d: number}> = ({d}) => {
       </AbsoluteFill>
       <div style={{position: 'absolute', left: width / 2 - 60, top: height * 0.34 - 60, width: 120, height: 120, borderRadius: '50%', background: `radial-gradient(circle, ${palette.phosphor} 0%, rgba(211,154,58,0.6) 12%, transparent 60%)`, opacity: first}} />
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 190}}>
-        <Caption world="night" {...sb.coldOpen.a} align="center" delay={30} exitAt={105} />
+        <Caption world="night" {...sb.coldOpen.a} align="center" delay={25} exitAt={90} />
       </AbsoluteFill>
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 190}}>
-        <Caption world="night" {...sb.coldOpen.b} align="center" size={52} delay={160} exitAt={d - 175} />
+        <Caption world="night" {...sb.coldOpen.b} align="center" size={50} delay={135} exitAt={d - 155} />
       </AbsoluteFill>
     </Night>
   );
@@ -63,11 +64,11 @@ const Neuron: React.FC<{d: number}> = ({d}) => {
       <Pos style={{left: c.cx - 300, width: 600, top: height * 0.88}}>
         <FigureLabel world="paper" {...sb.neuron.fig} delay={150} />
       </Pos>
-      <Pos style={{left: width * 0.56, top: height * 0.36}}>
-        <Caption world="paper" {...sb.neuron.a} delay={45} exitAt={140} />
+      <Pos style={{left: width * 0.5, top: height * 0.36}}>
+        <Caption world="paper" {...sb.neuron.a} size={44} delay={30} exitAt={100} />
       </Pos>
-      <Pos style={{left: width * 0.56, top: height * 0.36}}>
-        <Caption world="paper" {...sb.neuron.b} delay={200} exitAt={d - 225} />
+      <Pos style={{left: width * 0.5, top: height * 0.36}}>
+        <Caption world="paper" {...sb.neuron.b} size={44} delay={150} exitAt={d - 170} />
       </Pos>
     </AbsoluteFill>
   );
@@ -86,10 +87,10 @@ const Logic: React.FC<{d: number}> = ({d}) => {
         <FigureLabel world="paper" {...sb.logic.fig} delay={90} />
       </Pos>
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 110}}>
-        <Caption world="paper" {...sb.logic.a} align="center" delay={30} exitAt={115} />
+        <Caption world="paper" {...sb.logic.a} align="center" delay={20} exitAt={115} />
       </AbsoluteFill>
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 110}}>
-        <Caption world="paper" {...sb.logic.b} align="center" delay={165} exitAt={d - 190} />
+        <Caption world="paper" {...sb.logic.b} align="center" delay={155} exitAt={d - 175} />
       </AbsoluteFill>
     </AbsoluteFill>
   );
@@ -104,10 +105,10 @@ const Question: React.FC<{d: number}> = ({d}) => {
         <Typewriter text={sb.question.typed} delay={15} perChar={4} size={88} />
       </AbsoluteFill>
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 230}}>
-        <Caption world="paper" {...sb.question.a} align="center" delay={100} exitAt={d - 125} />
+        <Caption world="paper" {...sb.question.a} align="center" size={44} delay={70} exitAt={d - 90} />
       </AbsoluteFill>
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 90}}>
-        <FigureLabel world="paper" {...sb.question.fig} delay={120} />
+        <FigureLabel world="paper" {...sb.question.fig} delay={100} />
       </AbsoluteFill>
     </AbsoluteFill>
   );
@@ -133,7 +134,7 @@ const Ignition: React.FC<{d: number}> = ({d}) => {
       {/* a soft scrim so the caption never fights the glowing branches */}
       <AbsoluteFill style={{background: 'linear-gradient(to top, rgba(7,11,20,0.92) 0%, rgba(7,11,20,0.6) 22%, transparent 42%)', opacity: interpolate(f, [120, 150], [0, 1], clamp)}} />
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 130}}>
-        <Caption world="night" {...sb.ignition.a} align="center" delay={140} exitAt={d - 160} />
+        <Caption world="night" {...sb.ignition.a} align="center" delay={125} exitAt={d - 145} />
       </AbsoluteFill>
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 70}}>
         <FigureLabel world="night" credit={sb.ignition.credit} delay={170} />
@@ -144,12 +145,12 @@ const Ignition: React.FC<{d: number}> = ({d}) => {
 
 const Seeing: React.FC<{d: number}> = ({d}) => (
   <Night>
-    <SeeingInLayers assembleAt={165} />
+    <SeeingInLayers assembleAt={130} />
     <Pos style={{left: 140, top: 110}}>
-      <Caption world="night" {...sb.seeing.a} delay={20} exitAt={130} />
+      <Caption world="night" {...sb.seeing.a} delay={15} exitAt={105} />
     </Pos>
     <Pos style={{left: 140, top: 110}}>
-      <Caption world="night" {...sb.seeing.b} delay={200} exitAt={d - 225} />
+      <Caption world="night" {...sb.seeing.b} delay={145} exitAt={d - 165} />
     </Pos>
     <Pos style={{left: 140, bottom: 90}}>
       <FigureLabel world="night" credit={sb.seeing.credit} align="left" delay={40} />
@@ -163,12 +164,12 @@ const Behavior: React.FC<{d: number}> = ({d}) => (
     <AbsoluteFill style={{opacity: 0.35}}>
       <NeuralDust seed="beh" rate={0.6} count={160} />
     </AbsoluteFill>
-    <NovelSentence sentence={sb.behavior.sentence} gloss={sb.behavior.sentenceEn} assembleAt={130} />
+    <NovelSentence sentence={sb.behavior.sentence} gloss={sb.behavior.sentenceEn} assembleAt={150} />
     <Pos style={{left: 140, bottom: 140}}>
-      <Caption world="night" {...sb.behavior.a} delay={20} exitAt={95} />
+      <Caption world="night" {...sb.behavior.a} delay={15} exitAt={105} />
     </Pos>
     <Pos style={{left: 140, bottom: 140}}>
-      <Caption world="night" {...sb.behavior.b} delay={145} exitAt={d - 170} />
+      <Caption world="night" {...sb.behavior.b} delay={145} exitAt={d - 165} />
     </Pos>
     <Pos style={{left: 140, bottom: 90}}>
       <FigureLabel world="night" credit={sb.behavior.credit} align="left" delay={60} />
@@ -179,12 +180,12 @@ const Behavior: React.FC<{d: number}> = ({d}) => (
 // Winter: forward waves run, then everything freezes.
 const Winter: React.FC<{d: number}> = ({d}) => (
   <Night>
-    <LayeredNetwork frostAt={105} backAt={99999} />
+    <LayeredNetwork frostAt={135} backAt={99999} />
     <Pos style={{left: 140, bottom: 140}}>
-      <Caption world="night" {...sb.winter.a} delay={15} exitAt={95} />
+      <Caption world="night" {...sb.winter.a} delay={15} exitAt={105} />
     </Pos>
     <Pos style={{left: 140, bottom: 140}}>
-      <Caption world="night" {...sb.winter.b} delay={140} exitAt={d - 160} />
+      <Caption world="night" {...sb.winter.b} delay={145} exitAt={d - 165} />
     </Pos>
     <Pos style={{left: 140, bottom: 90}}>
       <FigureLabel world="night" credit={sb.winter.credit} align="left" delay={40} />
@@ -200,10 +201,10 @@ const Room: React.FC<{d: number}> = ({d}) => (
     </AbsoluteFill>
     <ChineseRoom start={30} cycle={72} />
     <Pos style={{left: 140, bottom: 140}}>
-      <Caption world="night" {...sb.room.a} delay={25} exitAt={100} />
+      <Caption world="night" {...sb.room.a} delay={20} exitAt={125} />
     </Pos>
     <Pos style={{left: 140, bottom: 140}}>
-      <Caption world="night" {...sb.room.b} delay={150} exitAt={d - 170} />
+      <Caption world="night" {...sb.room.b} delay={165} exitAt={d - 185} />
     </Pos>
     <Pos style={{left: 140, bottom: 90}}>
       <FigureLabel world="night" credit={sb.room.credit} align="left" delay={50} />
@@ -214,9 +215,9 @@ const Room: React.FC<{d: number}> = ({d}) => (
 // Thaw: the frozen network, then the error flows backwards and the ice melts.
 const Thaw: React.FC<{d: number}> = ({d}) => (
   <Night>
-    <LayeredNetwork frostAt={-60} backAt={55} />
+    <LayeredNetwork frostAt={-60} backAt={50} />
     <Pos style={{left: 140, bottom: 140}}>
-      <Caption world="night" {...sb.thaw.a} delay={30} exitAt={d - 60} />
+      <Caption world="night" {...sb.thaw.a} delay={20} exitAt={d - 45} />
     </Pos>
     <Pos style={{left: 140, bottom: 90}}>
       <FigureLabel world="night" credit={sb.thaw.credit} align="left" delay={70} />
@@ -229,7 +230,7 @@ const Bloom: React.FC<{d: number}> = ({d}) => (
     <NetworkBloom />
     <AbsoluteFill style={{background: 'radial-gradient(ellipse at center, transparent 40%, rgba(7,11,20,0.9) 100%)'}} />
     <Pos style={{left: 140, bottom: 140}}>
-      <Caption world="night" {...sb.bloom.a} delay={20} exitAt={d - 50} />
+      <Caption world="night" {...sb.bloom.a} delay={10} exitAt={d - 35} />
     </Pos>
     <Pos style={{right: 120, bottom: 120}}>
       <Counter {...sb.bloom.counter} delay={15} duration={d - 50} />
@@ -242,17 +243,19 @@ const Bloom: React.FC<{d: number}> = ({d}) => (
 
 const Go: React.FC<{d: number}> = ({d}) => (
   <Night>
-    <GoBoard keyMoveAt={125} />
+    <AbsoluteFill style={{transform: 'translateX(190px) scale(0.9)'}}>
+      <GoBoard keyMoveAt={80} />
+    </AbsoluteFill>
     <Pos style={{left: 140, top: 400}}>
-      <Caption world="night" {...sb.go.a} delay={135} exitAt={d - 155} />
+      <Caption world="night" {...sb.go.a} size={40} delay={15} exitAt={d - 35} />
     </Pos>
     <Pos style={{left: 140, bottom: 90}}>
-      <FigureLabel world="night" credit={sb.go.credit} align="left" delay={150} />
+      <FigureLabel world="night" credit={sb.go.credit} align="left" delay={60} />
     </Pos>
   </Night>
 );
 
-const ATTN_FLASH = 285;
+const ATTN_FLASH = 225;
 const Attention: React.FC<{d: number}> = ({d}) => {
   const f = useCurrentFrame();
   return (
@@ -261,11 +264,11 @@ const Attention: React.FC<{d: number}> = ({d}) => {
         <AttentionField tokens={sb.attention.tokens} allAt={ATTN_FLASH - 50} />
       </AbsoluteFill>
       <AbsoluteFill style={{alignItems: 'center', paddingTop: 50}}>
-        <Caption world="night" {...sb.attention.a} align="center" delay={30} exitAt={ATTN_FLASH - 60} />
+        <Caption world="night" {...sb.attention.a} align="center" delay={20} exitAt={ATTN_FLASH - 50} />
       </AbsoluteFill>
       <Flash at={ATTN_FLASH} rise={10} fall={40} />
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
-        <Caption world="night" {...sb.attention.b} align="center" size={56} delay={ATTN_FLASH + 25} exitAt={d - ATTN_FLASH - 50} />
+        <Caption world="night" {...sb.attention.b} align="center" size={52} delay={ATTN_FLASH + 20} exitAt={d - ATTN_FLASH - 40} />
       </AbsoluteFill>
       <Pos style={{left: 140, bottom: 90}}>
         <FigureLabel world="night" credit={sb.attention.credit} align="left" delay={60} />
@@ -276,18 +279,18 @@ const Attention: React.FC<{d: number}> = ({d}) => {
 
 const Minds: React.FC<{d: number}> = ({d}) => (
   <Night>
-    <TwoMinds digitiseAt={30} threadsAt={140} />
+    <TwoMinds digitiseAt={25} threadsAt={110} />
     <AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 110}}>
-      <Caption world="night" {...sb.twoMinds.a} align="center" delay={20} exitAt={120} />
+      <Caption world="night" {...sb.twoMinds.a} align="center" delay={15} exitAt={75} />
     </AbsoluteFill>
     <AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 110}}>
-      <Caption world="night" {...sb.twoMinds.b} align="center" delay={165} exitAt={140} />
+      <Caption world="night" {...sb.twoMinds.b} align="center" delay={115} exitAt={125} />
     </AbsoluteFill>
     <AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 110}}>
-      <Caption world="night" {...sb.twoMinds.c} align="center" size={52} delay={345} exitAt={d - 345 - 25} />
+      <Caption world="night" {...sb.twoMinds.c} align="center" size={56} delay={265} exitAt={d - 265 - 15} />
     </AbsoluteFill>
     <AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 46}}>
-      <FigureLabel world="night" credit={sb.twoMinds.credit} delay={380} />
+      <FigureLabel world="night" credit={sb.twoMinds.credit} delay={285} />
     </AbsoluteFill>
   </Night>
 );
@@ -346,6 +349,9 @@ export const Main: React.FC = () => {
         {cut()}
         {S('title', <TitleSplit {...sb.title} />)}
       </TransitionSeries>
+      {(['neuron', 'question', 'behavior', 'winter', 'bloom', 'twoMinds'] as const).map((k) => (
+        <ChapterLabel key={k} text={(sb[k] as {chapter: string}).chapter} from={startOf(k) + 10} dur={frames(k) - 40} world={k === 'neuron' || k === 'question' ? 'paper' : 'night'} />
+      ))}
       <YearTicker keys={keys} nightFrom={startOf('ignition') + 60} />
       {sb.music ? (
         <Audio src={staticFile(sb.music)} volume={(f) => interpolate(f, [0, FPS * 2, durationInFrames - FPS * 3, durationInFrames], [0, 0.8, 0.8, 0], clamp)} />
