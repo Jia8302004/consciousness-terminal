@@ -1,7 +1,7 @@
-# 《墨与光：从心智之争到人工智能》史实出处
+# 《从心智之争到人工智能》史实出处
 
 每条对应 `src/storyboard.ts` 里的一句文案或一个图注。改文案时同步更新本文件。
-叙事结构、全部中英文文案、"墨与光"视觉概念与配色字体为 skill 作者（Claude）的原创设计。
+叙事结构、全部中英文文案、视觉概念与配色字体为原创设计。所有示意画面（门、斯金纳箱、感知机面板、XOR 平面、聊天窗口等）均为程序绘制的插画。
 
 | 场景 | 文案/画面中的事实 | 出处 |
 |---|---|---|
@@ -24,6 +24,16 @@
 | 第 37 手 | AlphaGo 以 4 比 1 战胜李世石；第 37 手连职业棋手一时都没看懂 | 2016 年 3 月 AlphaGo 对李世石第二局第 37 手，当时解说与职业棋手普遍感到意外；DeepMind 相关报道与 D. Silver et al. (2016), *Nature* 529 描述了 AlphaGo 系统。棋盘为示意，并非真实棋局 |
 | 注意力 | 2017 年谷歌研究者提出 Transformer，每个词"注意"其他所有词 | A. Vaswani et al. (2017), "Attention Is All You Need", NeurIPS（Transformer 与自注意力）。画面中的注意力权重为示意 |
 | 注意力 | 它开口说话了 | OpenAI 于 2022 年 11 月 30 日发布 ChatGPT。"开口说话"是修辞 |
+| 图灵之问 | 两扇门与提问者的画面 | 对"模仿游戏"的示意插画，非图灵原文中的具体布置 |
+| 1956 | 提案标题页 "A PROPOSAL FOR THE DARTMOUTH SUMMER RESEARCH PROJECT ON ARTIFICIAL INTELLIGENCE"，落款 1955 年 8 月 31 日 | J. McCarthy, M. L. Minsky, N. Rochester & C. E. Shannon (1955) 提案原标题与日期；页面其余部分为示意 |
+| 心智之争 | 斯金纳箱（按杠杆、灯、食丸） | 操作性条件反射箱的示意插画 |
+| 分层视觉 | 电极记录的放电序列 | 示意：放电频率随刺激朝向与细胞偏好朝向的接近程度变化，不是真实记录 |
+| 寒冬 | 1958 年罗森布拉特造出会学习的感知机 | F. Rosenblatt (1958), "The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain", *Psychological Review* 65(6)；Mark I 感知机使用 20×20 共 400 个光电管。画面中的面板为示意 |
+| 寒冬 | 报纸引语 "…walk, talk, see, write, reproduce itself and be conscious of its existence." | *The New York Times*, 1958 年 7 月 8 日报道《New Navy Device Learns By Doing》，转述美国海军的说法 |
+| 寒冬 | XOR 平面：一条直线无法分开两类点 | 异或的四个点 (0,0)(1,1) 与 (0,1)(1,0) 线性不可分；Minsky & Papert (1969) |
+| 寒冬 | 年份读数滚到 1974 | 表示 1970 年代的寒冬期，非特指某一事件 |
+| 复苏 | 多层网络解决异或（画面中的弯曲分界带） | 多层网络可表示非线性分界；Rumelhart, Hinton & Williams (1986) 用反向传播训练的网络即演示了 XOR |
+| 注意力 | ChatGPT 两个月用户过亿 | 广泛报道的估算（Reuters 2023 年 2 月 1 日引用 UBS 研究报告，据 Similarweb 数据估算 2023 年 1 月月活约 1 亿）。聊天窗口为示意，不仿任何产品界面 |
 | 两个大脑 | 我们仍说不清它在想什么 | 大模型可解释性仍是开放研究问题（修辞性概括） |
 | 两个大脑 | 它理解吗？符号与连接，哪一个才是心智？ | 开放问题，片中不作结论。符号主义与联结主义之争：J. A. Fodor & Z. W. Pylyshyn (1988), "Connectionism and cognitive architecture: A critical analysis", *Cognition* 28；P. Smolensky (1988), "On the proper treatment of connectionism", *Behavioral and Brain Sciences* 11 等回应。相关讨论：J. Searle (1980) "Minds, Brains, and Programs"（中文屋）；T. Nagel (1974) "What Is It Like to Be a Bat?"；D. Chalmers (1995) "Facing Up to the Problem of Consciousness"（困难问题） |
 | 两个大脑 | 大脑点云 | 程序生成，非真实脑扫描数据 |

@@ -7,7 +7,7 @@ import {fonts} from '../fonts';
 //  Left: a mechanical grid of "刺激 → 反应" pairs blinking in lock-step (the stimulus–response view).
 //  Right: loose characters drift in the dark; at `assembleAt` some of them fly into a sentence
 //  nobody ever taught — the productivity of language. The rest keep drifting.
-export const NovelSentence: React.FC<{sentence: string; gloss?: string; assembleAt?: number; seed?: string}> = ({sentence, gloss, assembleAt = 135, seed = 'novel'}) => {
+export const NovelSentence: React.FC<{sentence: string; gloss?: string; assembleAt?: number; seed?: string; mech?: boolean}> = ({sentence, gloss, assembleAt = 135, seed = 'novel', mech: showMech = true}) => {
   const frame = useCurrentFrame();
   const {width, height} = useVideoConfig();
 
@@ -46,7 +46,7 @@ export const NovelSentence: React.FC<{sentence: string; gloss?: string; assemble
   return (
     <AbsoluteFill>
       {/* stimulus -> response, stamped out like a machine */}
-      <div style={{position: 'absolute', left: width * 0.1, top: height * 0.2, opacity: mech}}>
+      <div style={{position: 'absolute', left: width * 0.1, top: height * 0.2, opacity: showMech ? mech : 0}}>
         {Array.from({length: pairs}, (_, i) => {
           const beat = Math.floor(frame / 18) % pairs === i;
           return (
