@@ -106,6 +106,17 @@ export const sb = {
     credit: 'vaswani et al., 2017  →  chatgpt, 2022  (chat window is illustrative)',
     tokens: ['神经元', '卡哈尔', '缝隙', '开关', '图灵', 'Can', 'machines', 'think?', '1956', '刺激', '句子', '看见', '猫', '感知机', '异或', '冬天', '中文屋', '错误', '第37手', '注意'],
   },
+  // Douyin cover (1080x1920), see Cover.tsx
+  cover: {
+    kicker: '一百年的心智之争',
+    kickerEn: 'A century of arguing about the mind',
+    title1: '机器，',
+    title2: '能思考吗？',
+    sub: '从一支画神经元的笔，到会说话的AI',
+    subEn: 'From Cajal’s pen to machines that speak',
+    path: '神经元 → 图灵 → 1956 → 寒冬 → 注意力',
+    plate: '图一　神经元',
+  },
   twoMinds: {
     seconds: 13,
     a: {zh: '从卡哈尔的一支笔，到会说话的机器，\n走过了一百多年。', en: 'From Cajal’s pen to machines that speak: more than a century.'},
